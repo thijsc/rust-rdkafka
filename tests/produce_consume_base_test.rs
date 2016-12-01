@@ -9,7 +9,6 @@ use rdkafka::consumer::{Consumer, CommitMode};
 use rdkafka::consumer::stream_consumer::StreamConsumer;
 use rdkafka::message::Message;
 use rdkafka::producer::Producer;
-use rdkafka::topic_partition_list::TopicPartitionList;
 
 #[test]
 fn test_produce_consume_base() {
@@ -27,7 +26,7 @@ fn test_produce_consume_base() {
         )
         .create::<StreamConsumer>()
         .expect("Consumer creation failed");
-    consumer.subscribe(&TopicPartitionList::with_topics(&vec!["produce_consume_base"])).expect("Can't subscribe to specified topics");
+    consumer.subscribe(&vec!["produce_consume_base"]).expect("Can't subscribe to specified topics");
     let message_stream = consumer.start();
 
     // Produce some messages

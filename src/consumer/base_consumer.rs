@@ -39,8 +39,8 @@ impl BaseConsumer {
     /// Subscribes the consumer to a list of topics and/or topic sets (using regex).
     /// Strings starting with `^` will be regex-matched to the full list of topics in
     /// the cluster and matching topics will be added to the subscription list.
-    pub fn subscribe(&mut self, topics: &TopicPartitionList) -> KafkaResult<()> {
-        let tp_list = topics.create_native_topic_partition_list();
+    pub fn subscribe(&mut self, topics: &Vec<&str>) -> KafkaResult<()> {
+        let tp_list = TopicPartitionList::with_topics(topics).create_native_topic_partition_list();
         let ret_code = unsafe { rdkafka::rd_kafka_subscribe(self.client.ptr, tp_list) };
         if ret_code.is_error() {
             let error = unsafe { cstr_to_owned(rdkafka::rd_kafka_err2str(ret_code)) };
@@ -53,6 +53,18 @@ impl BaseConsumer {
     /// Unsubscribe from previous subscription list.
     pub fn unsubscribe(&mut self) {
         unsafe { rdkafka::rd_kafka_unsubscribe(self.client.ptr) };
+    }
+
+    /// Manually assign topics and partitions to consume.
+    pub fn assign(&mut self, assignment: &TopicPartitionList) -> KafkaResult<()> {
+        let tp_list = assignment.create_native_topic_partition_list();
+        let ret_code = unsafe { rdkafka::rd_kafka_assign(self.client.ptr, tp_list) };
+        if ret_code.is_error() {
+            let error = unsafe { cstr_to_owned(rdkafka::rd_kafka_err2str(ret_code)) };
+            return Err(KafkaError::Subscription(error))
+        };
+        unsafe { rdkafka::rd_kafka_topic_partition_list_destroy(tp_list) };
+        Ok(())
     }
 
     /// Returns a list of topics or topic patterns the consumer is subscribed to.

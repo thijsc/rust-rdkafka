@@ -52,8 +52,8 @@ unsafe extern "C" fn rebalance_cb(rk: *mut rdkafka::rd_kafka_t,
     // Handle callback
     match err {
         rdkafka::rd_kafka_resp_err_t::RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS => {
-            rdkafka::rd_kafka_assign(rk, partitions);
             let topic_partition_list = TopicPartitionList::from_rdkafka(partitions);
+            rdkafka::rd_kafka_assign(rk, partitions);
             opaque.rebalance_callback(Rebalance::Assign(topic_partition_list));
         },
         rdkafka::rd_kafka_resp_err_t::RD_KAFKA_RESP_ERR__REVOKE_PARTITIONS => {
