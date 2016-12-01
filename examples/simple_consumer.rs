@@ -15,7 +15,6 @@ use rdkafka::topic_partition_list::TopicPartitionList;
 mod example_utils;
 use example_utils::setup_logger;
 
-
 fn consume_and_print(brokers: &str, group_id: &str, topics: &TopicPartitionList) {
     let mut consumer = ClientConfig::new()
         .set("group.id", group_id)
