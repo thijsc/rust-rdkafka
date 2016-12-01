@@ -172,6 +172,13 @@ impl<'a> Topic<'a> {
         }
     }
 
+    /// Get topic's name
+    pub fn get_name(&self) -> String {
+        unsafe {
+            cstr_to_owned(rdkafka::rd_kafka_topic_name(self.ptr))
+        }
+    }
+
     /// Returns a pointer to the correspondent rdkafka `rd_kafka_topic_t` stuct.
     pub fn get_ptr(&self) -> *mut rdkafka::rd_kafka_topic_t {
         self.ptr
@@ -184,5 +191,28 @@ impl<'a> Drop for Topic<'a> {
         unsafe {
             rdkafka::rd_kafka_topic_destroy(self.ptr);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // Just call everything to test there no panics by default, behavior
+    // is tested in the integrations tests.
+
+    use config::{ClientConfig,TopicConfig};
+    use super::*;
+
+    #[test]
+    fn test_client() {
+        let mut client = Client::new(&ClientConfig::new(), ClientType::Consumer).unwrap();
+        client.take_rebalances();
+    }
+
+    #[test]
+    fn test_topic() {
+        let client = Client::new(&ClientConfig::new(), ClientType::Consumer).unwrap();
+        let topic = Topic::new(&client, "topic_name", &TopicConfig::new()).unwrap();
+        assert_eq!(topic.get_name(), "topic_name");
+        assert!(!topic.get_ptr().is_null());
     }
 }
