@@ -80,6 +80,12 @@ impl TopicPartitionList {
         self.topics.insert(topic.to_string(), Some(partitions_configs));
     }
 
+    /// Add topic with partitions and offsets configured
+    pub fn add_topic_with_partitions_and_offsets(&mut self, topic: &str, partitions_and_offsets: &Vec<(i32, i64)>) {
+        let partitions_configs: Vec<Partition> = partitions_and_offsets.iter().map(|po| Partition { partition: po.0, offset: po.1 } ).collect();
+        self.topics.insert(topic.to_string(), Some(partitions_configs));
+    }
+
     pub fn create_native_topic_partition_list(&self) -> *mut rdkafka::rd_kafka_topic_partition_list_t {
         let tp_list = unsafe { rdkafka::rd_kafka_topic_partition_list_new(self.topics.len() as i32) };
 
