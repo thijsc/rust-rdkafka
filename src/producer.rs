@@ -80,7 +80,7 @@ impl NativeTopic {
             rdkafka::rd_kafka_produce(
                 self.ptr(),
                 partition.unwrap_or(-1),
-                rdkafka::RD_KAFKA_MSG_F_COPY as i32,
+                (rdkafka::RD_KAFKA_MSG_F_COPY | rdkafka::RD_KAFKA_MSG_F_BLOCK) as i32,
                 payload_ptr,
                 payload_len,
                 key_ptr,
