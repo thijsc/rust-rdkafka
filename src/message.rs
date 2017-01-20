@@ -95,8 +95,8 @@ impl<'a> Message {
                 self.ptr,
                 &mut timestamp_type
             )
-        };
 
+        };
         match timestamp_type {
             rdkafka::rd_kafka_timestamp_type_t::RD_KAFKA_TIMESTAMP_NOT_AVAILABLE => Timestamp::NotAvailable,
             rdkafka::rd_kafka_timestamp_type_t::RD_KAFKA_TIMESTAMP_CREATE_TIME => Timestamp::CreateTime(timestamp),
