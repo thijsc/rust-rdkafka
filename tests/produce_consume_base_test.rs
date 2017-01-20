@@ -71,6 +71,8 @@ fn test_produce_consume_base() {
     let messages: Vec<Message> = message_stream.take(NUMBER_OF_MESSAGES).wait().map({ |message|
         match message {
             Ok(Ok(m)) => {
+                // Get message timestamp
+                m.timestamp();
                 consumer.commit_message(&m, CommitMode::Async);
                 // Pause and resume
                 consumer.pause();
